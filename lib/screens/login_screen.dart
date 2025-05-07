@@ -49,7 +49,7 @@ class LoginScreen extends ConsumerWidget {
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
-                  r);
+                  );
                 }
               },
               child: const Text('Login'),
