@@ -23,7 +23,7 @@ class FirestoreService {
   }
 
   // Menambah atau memperbarui catatan
-  Future<void> saveNote({String? noteId, required String title, required String content}) async {
+  Future<void> saveNote({String? noteId, required String title, required String content, bool? isPinned, required DateTime timestamp}) async {
     if (noteId != null) {
       await _firestore.collection('notes').doc(noteId).update({
         'title': title,

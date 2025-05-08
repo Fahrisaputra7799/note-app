@@ -2,28 +2,37 @@ class Note {
   final String id;
   final String title;
   final String content;
-  final String? userId;
+  final bool? isPinned;
+  final DateTime? timestamp;
+
+  var userId;
 
   Note({
     required this.id,
     required this.title,
     required this.content,
-    this.userId,
+    this.isPinned,
+    this.timestamp, required userId,
   });
-
-  factory Note.fromMap(Map<String, dynamic> data, String docId) {
-    return Note(
-      id: docId,
-      title: data['title'] ?? '',
-      content: data['content'] ?? '',
-      userId: data['userId'] ?? '',
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
       'title': title,
       'content': content,
+      'isPinned': isPinned ?? false,
+      'timestamp': timestamp?.millisecondsSinceEpoch,
     };
+  }
+
+  factory Note.fromMap(String id, Map<String, dynamic> map) {
+    return Note(
+      id: id,
+      title: map['title'] ?? '',
+      content: map['content'] ?? '',
+      isPinned: map['isPinned'] ?? false,
+      timestamp: map['timestamp'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['timestamp'])
+          : null, userId: null,
+    );
   }
 }

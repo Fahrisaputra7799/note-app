@@ -11,12 +11,27 @@ class NoteTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final firestore = FirestoreService();
 
+    final previewText = note.content.length > 100
+        ? '${note.content.substring(0, 50)}...'
+        : note.content;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
         child: ListTile(
-          title: Text(note.title),
-          subtitle: Text(note.content),
+          title: Text(
+            note.title,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          subtitle: Text(
+            previewText,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
           onTap:
               () => Navigator.push(
                 context,
@@ -32,9 +47,12 @@ class NoteTile extends StatelessWidget {
                     title: Text('Konfirmasi'),
                     content: Text('Yakin pengen hapus catatan mu?'),
                     actions: [
-                      TextButton(onPressed: () {
-                        Navigator.of(context).pop();
-                      }, child: Text('Batal')),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Batal'),
+                      ),
                       ElevatedButton(
                         onPressed: () async {
                           await firestore.deleteNote(note.id);

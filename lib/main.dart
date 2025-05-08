@@ -32,11 +32,11 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.grey[100],
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.indigo,
+          backgroundColor: Color(0xFF1D3557),
           foregroundColor: Colors.white,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.indigo,
+          backgroundColor: Color(0xFF1D3557),
           foregroundColor: Colors.white,
         ),
         inputDecorationTheme: InputDecorationTheme(

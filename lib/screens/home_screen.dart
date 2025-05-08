@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/note_model.dart';
@@ -61,6 +63,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                 final notes = snapshot.data ?? [];
 
+
                 final filteredNotes =
                     notes.where((note) {
                       final title = note.title.toLowerCase();
@@ -80,7 +83,92 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   itemCount: filteredNotes.length,
                   itemBuilder: (context, index) {
-                    return NoteTile(note: filteredNotes[index]);
+                    final note = filteredNotes[index];
+                    return Dismissible(
+                      key: Key(note.id),
+                      background: Container(
+                        color: Colors.green,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.push_pin, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text('Pin', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                      secondaryBackground: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(Icons.delete, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text(
+                              'Hapus',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                      confirmDismiss: (direction) async {
+                        if (direction == DismissDirection.endToStart) {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: const Text('Hapus Catatan'),
+                                  content: const Text(
+                                    'Yakin ingin menghapus catatan ini?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.pop(context, false),
+                                      child: const Text('Batal'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed:
+                                          () => Navigator.pop(context, true),
+                                      child: const Text('Hapus'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                          if (confirm ?? false) {
+                            await ref
+                                .read(firestoreServiceProvider)
+                                .deleteNote(note.id);
+                          }
+                          return confirm ?? false;
+                        } else if (direction == DismissDirection.startToEnd) {
+                          await ref
+                              .read(firestoreServiceProvider)
+                              .saveNote(
+                                noteId: note.id,
+                                title: note.title,
+                                content: note.content,
+                                isPinned: !(note.isPinned ?? false),
+                                timestamp: DateTime.now(),
+                              );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                note.isPinned == true
+                                    ? 'Catatan tidak dipin'
+                                    : 'Catatan dipin',
+                              ),
+                            ),
+                          );
+                          return false;
+                        }
+                        return false;
+                      },
+                      child: NoteTile(note: note),
+                    );
                   },
                   separatorBuilder:
                       (context, index) => const SizedBox(height: 8),
